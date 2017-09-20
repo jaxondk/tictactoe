@@ -1,0 +1,131 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="main.css">
+<script src="https://use.fontawesome.com/843f15c100.js"></script>
+<script>
+  window.onload = function() { //set all td elements' onclick to the markCell f(x)
+    var cells = document.getElementsByTagName('td');
+    for (var i = 0; i < cells.length; i++) {
+      cells[i].onclick = updateBoard;
+    }
+  }
+
+  var winner;
+  var squaresFilled = 0;
+  var marksArray = ['X', 'O'];
+
+  function isGameOver(cell) {
+    var mark = cell.innerHTML;
+    var winning_patterns = cell.classList; //the cell is grouped with other cells it can with with
+    var pattern;
+    //this loop checks each winning pattern the current cell is a part of to see if the patterns are full
+    for (var i = 0; i < winning_patterns.length; i++) {
+      pattern = document.getElementsByClassName(winning_patterns[i]);
+      if (isPatternMatching(pattern, mark)) {
+        winner = mark;
+        return true;
+      }
+    }
+
+    if (squaresFilled == 9) {
+      return true;
+    } else {
+      return false
+    }
+  }
+
+  function isPatternMatching(p, mark) {
+    var matching = true;
+    for (var i = 0; i < p.length; i++) {
+      if (p[i].innerHTML != mark)
+        matching = false;
+    }
+    return matching;
+  }
+
+  function updateBoard(e) {
+    var cell = event.srcElement;
+    markCell(cell);
+    if (isGameOver(cell)) {
+      if (winner) {
+        changeMarks();
+        document.getElementById("result").innerHTML = "Game Over. Player " + winner + " wins!";
+      } else {
+        document.getElementById("result").innerHTML = "BOOOO! Game Ends in a tie"
+      }
+      
+      //Replay button
+      var button = document.createElement("button");
+      button.innerHTML = "Replay";
+      button.id = "replay_btn";
+      document.getElementsByTagName("body")[0].appendChild(button);
+      button.addEventListener("click", replay);
+
+    }
+  }
+
+  function changeMarks() {
+    var cells = document.getElementsByTagName('td');
+    for (var i = 0; i < cells.length; i++) {
+      var cell = cells[i];
+      var content = cell.innerHTML;
+      if (content == winner) {
+        cell.innerHTML = '<i class="fa fa-smile-o" aria-hidden="true"></i>';
+      } else if (content != "") {
+        cell.innerHTML = '<i class="fa fa-frown-o" aria-hidden="true"></i>';
+      }
+    }
+  }
+
+  function replay() {
+    //clear result header
+    document.getElementById("result").innerHTML = "";
+    //clear cells
+    var cells = document.getElementsByTagName('td');
+    for (var i = 0; i < cells.length; i++) {
+      cells[i].innerHTML = "";
+    }
+    //restore global variables
+    squaresFilled = 0;
+    winner = undefined;
+    //remove button
+    var replay_btn = document.getElementById("replay_btn");
+    replay_btn.parentNode.removeChild(replay_btn);
+  }
+
+  function markCell(cell) {
+    var mark = marksArray[squaresFilled % 2];
+    if (cell.innerHTML != "")
+      return;
+    cell.innerHTML = mark;
+    squaresFilled++;
+  }
+
+</script>
+</head>
+
+<body>
+  <h1>Tic Tac Toe</h1>
+  <h3 id="result"></h3>
+  <table id="gameboard">
+    <tr>
+      <td class="row1 col1 diag-lr"></td>
+      <!-- diag-lr = the diagonal left to right -->
+      <td class="row1 col2"></td>
+      <td class="row1 col3 diag-rl"></td>
+    </tr>
+    <tr>
+      <td class="row2 col1"></td>
+      <td class="row2 col2 diag-lr diag-rl"></td>
+      <td class="row2 col3"></td>
+    </tr>
+    <tr>
+      <td class="row3 col1 diag-rl"></td>
+      <td class="row3 col2"></td>
+      <td class="row3 col3 diag-lr"></td>
+    </tr>
+  </table>
+
+</body>
+
+</html>
